@@ -1,0 +1,11 @@
+{
+  "name": "headstart",
+  "owner": { "name": "headstart contributors" },
+  "plugins": [
+    {
+      "name": "headstart",
+      "source": "./",
+      "description": "Safety hooks, core skills, second-check helpers and a learn-as-you-go tour for people new to Claude Code."
+    }
+  ]
+}

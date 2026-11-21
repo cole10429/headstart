@@ -1,0 +1,25 @@
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+.claude/settings.local.json
+
+# Real data stays on this computer, never in git
+private/
+data/real/
+
+# Tools and build output
+node_modules/
+.venv/
+__pycache__/
+dist/
+build/
+.next/
+.vercel/
+*.log
+
+# System files
+.DS_Store
+Thumbs.db

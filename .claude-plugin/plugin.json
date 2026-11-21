@@ -1,0 +1,7 @@
+{
+  "name": "headstart",
+  "version": "0.1.0",
+  "description": "A year of Claude Code habits as a starter kit: safety hooks, a short set of skills, three second-check helpers and a tour that teaches one thing at a time as you work.",
+  "license": "MIT",
+  "keywords": ["starter", "beginner", "safety", "hooks", "onboarding"]
+}

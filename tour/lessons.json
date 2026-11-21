@@ -1,0 +1,198 @@
+{
+  "about": "Tour lessons, in priority order. The tour hook picks the first unseen lesson whose trigger matches what just happened. 'teach' is what the agent turns into a four-line note; 'more' is used when the user types 'tour more'. Triggers: event (SessionStart, UserPromptSubmit, PostToolUse), tool and input (regex on the tool name and its input), prompt (regex on what the user typed), maxWords, minWords, minSessions, corrections.",
+  "lessons": [
+    {
+      "id": "welcome",
+      "title": "How to ask",
+      "when": {
+        "event": "SessionStart"
+      },
+      "teach": "Claude does its best work when a request says three things: what you want, where it is (the file, page or folder), and how you will know it worked. You can also just describe a problem and ask Claude to look first. Nothing here needs special commands; plain sentences are fine.",
+      "more": "Compare 'fix the form' with 'the contact form on index.html sends nothing when I press Send; make it email me and show me it working'. The second one lets Claude check its own work. Anthropic's built-in /powerup command has short interactive lessons with demos. Course: https://academy.claude.com/courses/claude-code-101"
+    },
+    {
+      "id": "secrets",
+      "title": "Passwords and keys",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(password|passcode|api[ _-]?key|secret key|access token|\\.env\\b|credit card|card number|social insurance|ssn\\b|sin number)"
+      },
+      "teach": "Never paste a password, key or card number into the chat: it is stored in the session history on this computer. Keep secrets in a .env file or a password manager and tell Claude the name of the setting instead. This kit blocks Claude from opening .env, key and credentials files, so it will ask you to handle those yourself.",
+      "more": "The installer added 'deny' rules for .env files, *.key, *.pem, *.token, anything named credentials, and the login files of common tools. If a secret was pasted by mistake, change that password or key; deleting the message does not un-share it. Rules live in the settings file under permissions."
+    },
+    {
+      "id": "corrections",
+      "title": "When it keeps getting it wrong",
+      "when": {
+        "event": "UserPromptSubmit",
+        "corrections": 2
+      },
+      "teach": "After two corrections that did not land, a third rarely helps, because the conversation is now full of the wrong attempts. Start clean instead: type /clear (or open a new session) and write one better request that includes what you learned. Pressing Esc stops Claude mid-action, and /rewind takes the files back to an earlier point.",
+      "more": "Anthropic's own guidance is the same: after two failed corrections, clear and re-prompt. A good restart prompt names what was tried, why it was wrong and what right looks like. /rewind (or Esc twice in the terminal) restores files and conversation to a checkpoint. Docs: https://code.claude.com/docs/en/best-practices"
+    },
+    {
+      "id": "specific",
+      "title": "Say what done looks like",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "^\\s*(please\\s+)?(build|make|create|write|fix|add|change|update|set ?up|design)\\b",
+        "maxWords": 9
+      },
+      "teach": "Short requests make Claude guess. One extra sentence saying what 'finished' looks like saves a round of rework. For anything bigger than a small fix, typing /headstart:grill-me makes Claude interview you first, with a suggested answer for every question so 'yes' is enough.",
+      "more": "Vague requests cost more than they save because Claude explores more before acting. Vague is fine when you are only exploring ('what could we do about X?'). The grill-me skill asks every open question in rounds and will not start building until you agree you both mean the same thing."
+    },
+    {
+      "id": "plan",
+      "title": "Plan before big changes",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(plan|redesign|rebuild|from scratch|whole (site|app|project)|big (change|project)|rewrite|migrate|overhaul)\\b",
+        "minWords": 12
+      },
+      "teach": "For big jobs, switch to Plan mode first (the mode picker by the message box, or Shift+Tab in the terminal). In Plan mode Claude looks around and writes a plan without editing your files, then waits for you to approve it. Read the plan properly: it is the cheapest place to change direction.",
+      "more": "Anthropic teaches the order explore, plan, code, commit. In Plan mode Claude may still run commands to explore, but it holds off editing until you approve. Ask Claude to shrink a plan that looks too big to a first slice you can try. Lesson: https://academy.claude.com/courses/claude-code-101"
+    },
+    {
+      "id": "memory",
+      "title": "Making it remember",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(remember (this|that|to)|from now on|always (do|use|ask|check)|never (do|use)|next time|stop doing|don'?t ever)\\b"
+      },
+      "teach": "Claude starts every session fresh. What carries over is a short file of standing rules called CLAUDE.md (yours is in the .claude folder in your user folder) plus memory notes. Say 'save that as a rule' and Claude adds a line. Keep it short: past a couple of hundred lines Claude starts skipping rules, so this kit makes it tidy the file whenever it edits it.",
+      "more": "A rule that must hold every single time belongs in a hook or a permission rule, because written rules are guidance and can be missed. Each project folder can have its own CLAUDE.md for that project's facts. /memory lists your rules files. Anthropic's target is under 200 lines per file. Docs: https://code.claude.com/docs/en/memory"
+    },
+    {
+      "id": "permissions",
+      "title": "What the approval cards mean",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(Bash|PowerShell)$"
+      },
+      "teach": "Claude just ran a command on this computer. When it wants to do something risky you get an approval card: read the one-line reason before clicking. This kit makes it always ask before deleting folders, pushing code to GitHub or publishing a site, and blocks a short list of destructive commands outright.",
+      "more": "Permission modes, least to most trusting: manual (asks for everything), accept edits, plan (proposes before editing), auto (a checker decides what is safe). Never use 'bypass permissions' on a normal computer; Anthropic documents it for sealed-off test machines only. Auto mode's checker judges intent, not whether the work is correct. Docs: https://code.claude.com/docs/en/permissions"
+    },
+    {
+      "id": "checkpoints",
+      "title": "Undo and seeing changes",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(Edit|Write)$"
+      },
+      "teach": "Claude just changed a file. You can see exactly what changed in the diff view, and you can undo: /rewind takes the files and the conversation back to an earlier point. Ask 'show me before and after in plain words' any time a change is not clear.",
+      "more": "Checkpoints follow files Claude edited with its own editing tools. A file changed only by a command it ran (for example a script that moved files) is not tracked, so for anything important use git commits as real save points. Docs: https://code.claude.com/docs/en/checkpointing"
+    },
+    {
+      "id": "git",
+      "title": "Save points with git",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(Bash|PowerShell)$",
+        "input": "\\bgit\\s+(commit|init|push|checkout|switch|branch)\\b"
+      },
+      "teach": "Git is the project's save-point system. A commit is a named save point on this computer that you can always go back to. A push sends your save points to GitHub, which is the first step that leaves your machine, so this kit makes Claude ask before every push. Asking Claude to 'commit this' after each working step is a good habit.",
+      "more": "Branches are parallel copies for trying something without touching the working version. The kit blocks commands that throw work away without a save point (force push, hard reset, cleaning untracked files) and blocks skipping a project's own commit checks. Two Claude sessions should not edit the same folder at once; a worktree gives each its own copy."
+    },
+    {
+      "id": "packages",
+      "title": "Installing other people's code",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(Bash|PowerShell)$",
+        "input": "\\b(npm|pnpm|yarn|bun)\\s+(i|install|add)\\b|\\bnpx\\s|\\bpip3?\\s+install\\b|\\buv\\s+(add|pip)\\b"
+      },
+      "teach": "That command installs code written by strangers, which is the most common way a computer gets infected through a coding tool. This kit checks each package first: known malware, how new the release is, how many people use it and whether it runs scripts on install. Red flags block the install and Claude has to tell you why.",
+      "more": "The installer also set npm to refuse releases under 7 days old and to skip install scripts, because bad releases are usually caught within days. A few packages need their install script; Claude will explain and hand you the one command to allow just that package. Ask 'do we need a package for this?' first: often the answer is no."
+    },
+    {
+      "id": "verify",
+      "title": "Done means you saw it work",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(is it (done|working|fixed)|does it work|did (it|that) work|all (done|good)\\??|finished\\?|ready\\?)"
+      },
+      "teach": "Treat 'done' as a claim until you have seen it: the page opened, the file produced, the test run. Ask 'show me it working' and Claude will run it and show the result. If Claude wants to change an existing test to make it pass, this kit stops and asks you, because that hides a failure instead of fixing it.",
+      "more": "Anthropic's top tip is to give Claude a way to check its own work: a test to run, a page to open, a sample of the expected output. 'It builds' and 'tests pass' are not the same as 'it works'. Docs: https://code.claude.com/docs/en/best-practices"
+    },
+    {
+      "id": "research",
+      "title": "Checking facts",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(WebSearch|WebFetch)$"
+      },
+      "teach": "Claude just looked something up online. It can still be wrong, or read a stale page. This kit has Claude label claims as checked, reported by a source, or inferred. For anything you will act on or pass along, ask 'fact-check that' and a separate helper tries to disprove each claim against its source.",
+      "more": "The fact-check helper is given the claims and their links but not Claude's conclusion, so it cannot simply agree. The second-check helper does the same for numbers: it recalculates from the inputs without seeing the first answer. Use both before money, legal or health decisions, and still confirm with a professional."
+    },
+    {
+      "id": "helpers",
+      "title": "Helper agents",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^(Agent|Task)$"
+      },
+      "teach": "Claude just handed part of the job to a helper agent: a separate Claude that works on its own and reports back a summary. Helpers are good for searching, reading a lot, and giving a second opinion. Their reports are claims until checked, and each one uses up your usage allowance, so one or two at a time is plenty.",
+      "more": "Built-in helpers include Explore (finds things) and Plan. This kit adds fact-check and second-check. You can ask Claude to 'use a helper to review this' for a fresh pair of eyes. Course: https://academy.claude.com/courses/introduction-to-subagents"
+    },
+    {
+      "id": "skills",
+      "title": "Skills",
+      "when": {
+        "event": "PostToolUse",
+        "tool": "^Skill$"
+      },
+      "teach": "Claude just loaded a skill: a saved set of instructions for one kind of job that only loads when needed. Type / to see the list. If you find yourself typing the same multi-step instruction a second time, ask Claude to 'turn that into a skill' and it becomes a one-word command.",
+      "more": "This kit's skills: setup, tour, grill-me (interview before building), handoff (end a session cleanly), package-vet, instruction-edit, humanizer (make text sound less like AI) and windows-shell. A skill is a folder with a SKILL.md file. Course: https://academy.claude.com/courses/introduction-to-agent-skills"
+    },
+    {
+      "id": "writing",
+      "title": "Text other people will read",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(email|e-mail|letter|cover letter|resume|linkedin|post|caption|text (him|her|them)|message to|reply to|announcement|speech)\\b"
+      },
+      "teach": "For anything another person will read, give Claude a sample of how you actually write and say who the reader is. Then ask it to 'humanize this': the humanizer skill removes the habits that make text read as AI-written, without changing what it says. Read it once yourself before sending; Claude drafts, you send.",
+      "more": "Common AI tells: 'it's not X, it's Y' contrasts, groups of three, dashes everywhere, a punchy closing line, inflated words. Claude will not send messages for you unless you set that up and approve each one."
+    },
+    {
+      "id": "connectors",
+      "title": "Connecting your apps",
+      "when": {
+        "event": "UserPromptSubmit",
+        "prompt": "\\b(gmail|outlook|my (calendar|inbox|email|drive)|google (drive|docs|sheets|calendar)|notion|slack|dropbox|onedrive|spreadsheet in)\\b"
+      },
+      "teach": "Claude can work with apps like your email, calendar and files through connectors, which you switch on in settings. Each one you leave on takes up room in every conversation and widens what Claude can touch, so turn on only what today's job needs. Anything that sends, posts or deletes should ask you first.",
+      "more": "Connectors use a standard called MCP. /mcp shows what is connected. A tool only one project needs can be switched on in that project's own settings instead of everywhere, and one a project never uses can be turned off there. Read what a connector or plugin does before installing it: plugins run with your own access to this computer. Course: https://academy.claude.com/courses/claude-code-101"
+    },
+    {
+      "id": "limits",
+      "title": "Your usage limits",
+      "when": {
+        "event": "UserPromptSubmit",
+        "minSessions": 2
+      },
+      "teach": "Your plan has a usage allowance that refills every five hours, plus a weekly cap, shared by the Claude app and Claude Code. Type /usage to see where you stand. The biggest saver is the model: type /model and pick opusplan, which plans on Opus and builds on the cheaper Sonnet. Start a fresh session for each new job, since a long conversation costs more every turn.",
+      "more": "/effort sets how hard Claude thinks; medium is the default, so raise it only for a hard problem. Helpers on Haiku or Sonnet cost less than the main session. /usage also shows what used the most, and pressing f there fixes some of it. When you hit a limit, the message says when it resets. Help: https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+    },
+    {
+      "id": "context",
+      "title": "Fresh sessions",
+      "when": {
+        "event": "SessionStart",
+        "minSessions": 4
+      },
+      "teach": "A session is one conversation. Start a new one (or type /clear) when you switch to a different job: mixing jobs in one long conversation makes Claude slower, costlier and more forgetful. Before you leave a job half done, type /headstart:handoff and Claude writes the open items into the project's own notes so the next session picks up from there.",
+      "more": "/compact shrinks a long conversation to a summary when you are continuing the same job; /clear starts a clean conversation for a new one (the old one can still be resumed); /context shows how full it is. The kit warns once a conversation passes about 250k tokens, since every turn re-reads all of it. Notes that only live in a chat are lost; notes in the project folder are not."
+    },
+    {
+      "id": "insights",
+      "title": "See how you really work",
+      "when": {
+        "event": "SessionStart",
+        "minSessions": 10
+      },
+      "teach": "You have used Claude enough for a report to be worth it. Type /insights and it builds a page from your recent sessions: what you work on, where things go wrong and features worth trying. /doctor checks the installation and offers fixes. Both are built in.",
+      "more": "Change your setup when the same problem shows up twice in real work, not because of a new tip you read. The file docs/WHY.md in the Headstart repo lists what this kit's author tried and dropped, which can save you the same experiments."
+    }
+  ]
+}

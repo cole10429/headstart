@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.env
+.env.*
+*.headstart-backup-*
+.claude/settings.local.json
+PRIVATE-NOTES.md
