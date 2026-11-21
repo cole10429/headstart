@@ -2,7 +2,7 @@
 #
 #   irm https://raw.githubusercontent.com/cole10429/headstart/main/install.ps1 | iex
 #
-# It checks for Claude Code, Git, Node and the GitHub CLI, downloads this repo to a temporary
+# It checks for Claude Code, Git, Node and the GitHub CLI (offering to install any that are missing), downloads this repo to a temporary
 # folder, runs install/install.mjs (which shows a plan and asks before changing
 # anything), then deletes the temporary folder. Read it before you run it.
 
@@ -24,9 +24,19 @@
     }
 
     if (-not (Test-Tool 'claude')) {
-        Write-Host "Claude Code is not installed. Install it first, sign in once, then run this again:" -ForegroundColor Yellow
-        Write-Host "  irm https://claude.ai/install.ps1 | iex"
-        return
+        # The desktop app keeps its own copy of Claude Code that this window cannot use, so the command-line one is needed too.
+        $answer = Read-Host "The claude command is not installed (the desktop app alone does not add it). Install it now with Anthropic's official installer? [Y/n]"
+        if ($answer -and $answer -notmatch '^(y|yes)$') {
+            Write-Host "Install it later with:  irm https://claude.ai/install.ps1 | iex   then run this again." -ForegroundColor Yellow
+            return
+        }
+        # Run in a separate PowerShell so nothing in Anthropic's script can close this window.
+        powershell -NoProfile -Command "irm https://claude.ai/install.ps1 | iex" | Out-Host
+        $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User') + ';' + (Join-Path $HOME '.local\bin')
+        if (-not (Test-Tool 'claude')) {
+            Write-Host "Claude Code was installed, but this window cannot see it yet. Close PowerShell, open a new one and paste the Headstart line again." -ForegroundColor Yellow
+            return
+        }
     }
     if (-not (Test-Tool 'git')) {
         if (-not (Install-WithWinget 'Git' 'Git.Git' 'git')) {

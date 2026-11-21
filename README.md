@@ -6,7 +6,7 @@ You do not need to be a programmer to use it.
 
 ## Install
 
-You need Claude Code installed and signed in first ([how](https://code.claude.com/docs/en/quickstart)).
+You need a Claude account. On Windows, the installer offers to install Claude Code's `claude` command if it is missing, which it is if you only have the desktop app; sign in to it once afterwards. On macOS or Linux, install Claude Code first ([how](https://code.claude.com/docs/en/quickstart)). The kit works the same in the desktop app's Code tab and in the terminal, since both read the same settings.
 
 **Windows.** Open PowerShell and paste:
 
