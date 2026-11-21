@@ -46,7 +46,7 @@ In this order, briefly:
 1. What you now know about them: the lines you wrote, as written.
 2. What the kit does without being asked, in three lines: it asks before deleting, pushing or publishing; it checks packages before installing; it stops and asks before changing an existing test.
 3. Usage: on Pro, a standard Team seat or "not sure", suggest they type `/model opusplan` themselves: Opus plans, the cheaper Sonnet builds, and the allowance lasts much longer. On a premium seat or Max, mention it as an option. Never change the model for them.
-4. GitHub: if `gh` is missing, offer to install it (`winget install --id GitHub.cli -e` on Windows) and run it only on their yes. If it is not signed in, ask them to type `! gh auth login` in this chat and follow the browser steps, then `! gh auth setup-git` so git and plugin updates can use that sign-in. The sign-in is theirs to do, never yours.
+4. GitHub: if `gh` is missing, offer to install it (`winget install --id GitHub.cli -e` on Windows) and run it only on their yes. If it is not signed in, the sign-in asks questions, so it cannot run in the chat: ask them to open a terminal (the Terminal pane in the desktop app, or a PowerShell or Terminal window), run `gh auth login --web`, follow the browser steps, then run `gh auth setup-git` so git and plugin updates can use that sign-in. The sign-in is theirs to do, never yours.
 5. For a real project, `/headstart:new-project` sets up its notes, git and a first small slice.
 6. The tour: from now on, at most one short "Tour:" note per session, when something relevant comes up. `tour off` stops it, `tour status` lists the lessons, `tour next` gives one now.
 
