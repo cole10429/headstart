@@ -4,4 +4,4 @@ node_modules/
 .env.*
 *.headstart-backup-*
 .claude/settings.local.json
-PRIVATE-NOTES.md
+PRIVATE-*
